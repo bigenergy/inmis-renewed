@@ -4,6 +4,7 @@ import com.mojang.blaze3d.systems.RenderSystem;
 import draylar.inmis.Inmis;
 import draylar.inmis.api.Dimension;
 import draylar.inmis.api.Rectangle;
+import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.ingame.HandledScreen;
 import net.minecraft.client.render.*;
 import net.minecraft.client.util.math.MatrixStack;
@@ -34,33 +35,55 @@ public class BackpackHandledScreen extends HandledScreen<BackpackScreenHandler> 
         this.playerInventoryTitleX = handler.getPlayerInvSlotPosition(dimension, 0, 0).x;
         this.playerInventoryTitleY = this.backgroundHeight - 94;
     }
-    
+
+
     @Override
-    protected void drawBackground(MatrixStack matrices, float delta, int mouseX, int mouseY) {
+    protected void drawBackground(DrawContext context, float delta, int mouseX, int mouseY) {
         RenderSystem.clearColor(1.0F, 1.0F, 1.0F, 1.0F);
         int x = (this.width - this.backgroundWidth) / 2;
         int y = (this.height - this.backgroundHeight) / 2;
-        renderBackgroundTexture(matrices, new Rectangle(x, y, backgroundWidth, backgroundHeight), delta, 0xFFFFFFFF);
+        renderBackgroundTexture(context, new Rectangle(x, y, backgroundWidth, backgroundHeight), delta, 0xFFFFFFFF);
         RenderSystem.setShaderTexture(0, SLOT_TEXTURE);
         for (Slot slot : getScreenHandler().slots) {
-            drawTexture(matrices, x + slot.x - 1, y + slot.y - 1, 0, 0, 18, 18, 18, 18);
+            context.drawTexture(SLOT_TEXTURE, x + slot.x - 1, y + slot.y - 1, 0, 0, 18, 18, 18, 18);
         }
     }
     
     @Override
-    public void render(MatrixStack matrices, int mouseX, int mouseY, float delta) {
-        this.renderBackground(matrices);
-        super.render(matrices, mouseX, mouseY, delta);
-        this.drawMouseoverTooltip(matrices, mouseX, mouseY);
+    public void render(DrawContext context, int mouseX, int mouseY, float delta) {
+        this.renderBackground(context);
+        super.render(context, mouseX, mouseY, delta);
+        this.drawMouseoverTooltip(context, mouseX, mouseY);
     }
 
     @Override
-    public void drawForeground(MatrixStack matrices, int mouseX, int mouseY) {
-        textRenderer.draw(matrices, title, (float) titleX, (float) titleY, guiTitleColor);
-        textRenderer.draw(matrices, playerInventoryTitle, (float) playerInventoryTitleX, (float) playerInventoryTitleY, guiTitleColor);
+    public void drawForeground(DrawContext context, int mouseX, int mouseY) {
+
+        context.drawText(
+                textRenderer,
+                title,
+                titleX,
+                titleY,
+                guiTitleColor,
+                false
+        );
+
+        context.drawText(
+                textRenderer,
+                playerInventoryTitle,
+                playerInventoryTitleX,
+                playerInventoryTitleY,
+                guiTitleColor,
+                false
+        );
+
+        //textRenderer.draw(context, title, (float) titleX, (float) titleY, guiTitleColor);
+
+        //textRenderer.draw(context, title, (float) titleX, (float) titleY, guiTitleColor);
+        //textRenderer.draw(context, playerInventoryTitle, (float) playerInventoryTitleX, (float) playerInventoryTitleY, guiTitleColor);
     }
     
-    public void renderBackgroundTexture(MatrixStack matrices, Rectangle bounds, float delta, int color) {
+    public void renderBackgroundTexture(DrawContext context, Rectangle bounds, float delta, int color) {
         float alpha = ((color >> 24) & 0xFF) / 255f;
         float red = ((color >> 16) & 0xFF) / 255f;
         float green = ((color >> 8) & 0xFF) / 255f;
@@ -74,20 +97,20 @@ public class BackpackHandledScreen extends HandledScreen<BackpackScreenHandler> 
         // 9 Patch Texture
         
         // Four Corners
-        this.drawTexture(matrices, x, y, 106 + xTextureOffset, 124 + yTextureOffset, 8, 8);
-        this.drawTexture(matrices, x + width - 8, y, 248 + xTextureOffset, 124 + yTextureOffset, 8, 8);
-        this.drawTexture(matrices, x, y + height - 8, 106 + xTextureOffset, 182 + yTextureOffset, 8, 8);
-        this.drawTexture(matrices, x + width - 8, y + height - 8, 248 + xTextureOffset, 182 + yTextureOffset, 8, 8);
+        context.drawTexture(GUI_TEXTURE, x, y, 106 + xTextureOffset, 124 + yTextureOffset, 8, 8);
+        context.drawTexture(GUI_TEXTURE, x + width - 8, y, 248 + xTextureOffset, 124 + yTextureOffset, 8, 8);
+        context.drawTexture(GUI_TEXTURE, x, y + height - 8, 106 + xTextureOffset, 182 + yTextureOffset, 8, 8);
+        context.drawTexture(GUI_TEXTURE, x + width - 8, y + height - 8, 248 + xTextureOffset, 182 + yTextureOffset, 8, 8);
         
-        Matrix4f matrix = matrices.peek().getPositionMatrix();
+        Matrix4f matrix = context.getMatrices().peek().getPositionMatrix();
         // Sides
-        drawTexturedQuad(matrix, x + 8, x + width - 8, y, y + 8, getZOffset(), (114 + xTextureOffset) / 256f, (248 + xTextureOffset) / 256f, (124 + yTextureOffset) / 256f, (132 + yTextureOffset) / 256f);
-        drawTexturedQuad(matrix, x + 8, x + width - 8, y + height - 8, y + height, getZOffset(), (114 + xTextureOffset) / 256f, (248 + xTextureOffset) / 256f, (182 + yTextureOffset) / 256f, (190 + yTextureOffset) / 256f);
-        drawTexturedQuad(matrix, x, x + 8, y + 8, y + height - 8, getZOffset(), (106 + xTextureOffset) / 256f, (114 + xTextureOffset) / 256f, (132 + yTextureOffset) / 256f, (182 + yTextureOffset) / 256f);
-        drawTexturedQuad(matrix, x + width - 8, x + width, y + 8, y + height - 8, getZOffset(), (248 + xTextureOffset) / 256f, (256 + xTextureOffset) / 256f, (132 + yTextureOffset) / 256f, (182 + yTextureOffset) / 256f);
+        drawTexturedQuad(matrix, x + 8, x + width - 8, y, y + 8, 0, (114 + xTextureOffset) / 256f, (248 + xTextureOffset) / 256f, (124 + yTextureOffset) / 256f, (132 + yTextureOffset) / 256f);
+        drawTexturedQuad(matrix, x + 8, x + width - 8, y + height - 8, y + height, 0, (114 + xTextureOffset) / 256f, (248 + xTextureOffset) / 256f, (182 + yTextureOffset) / 256f, (190 + yTextureOffset) / 256f);
+        drawTexturedQuad(matrix, x, x + 8, y + 8, y + height - 8, 0, (106 + xTextureOffset) / 256f, (114 + xTextureOffset) / 256f, (132 + yTextureOffset) / 256f, (182 + yTextureOffset) / 256f);
+        drawTexturedQuad(matrix, x + width - 8, x + width, y + 8, y + height - 8, 0, (248 + xTextureOffset) / 256f, (256 + xTextureOffset) / 256f, (132 + yTextureOffset) / 256f, (182 + yTextureOffset) / 256f);
         
         // Center
-        drawTexturedQuad(matrix, x + 8, x + width - 8, y + 8, y + height - 8, getZOffset(), (114 + xTextureOffset) / 256f, (248 + xTextureOffset) / 256f, (132 + yTextureOffset) / 256f, (182 + yTextureOffset) / 256f);
+        drawTexturedQuad(matrix, x + 8, x + width - 8, y + 8, y + height - 8, 0, (114 + xTextureOffset) / 256f, (248 + xTextureOffset) / 256f, (132 + yTextureOffset) / 256f, (182 + yTextureOffset) / 256f);
     }
     
     private static void drawTexturedQuad(Matrix4f matrices, int x0, int x1, int y0, int y1, int z, float u0, float u1, float v0, float v1) {

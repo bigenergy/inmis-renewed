@@ -34,7 +34,7 @@ public abstract class PlayerDropMixin extends LivingEntity {
 
     @Inject(method = "dropInventory", at = @At("HEAD"))
     private void emptyBackpacks(CallbackInfo ci) {
-        if (!this.world.getGameRules().getBoolean(GameRules.KEEP_INVENTORY)) {
+        if (!this.getWorld().getGameRules().getBoolean(GameRules.KEEP_INVENTORY)) {
             if(Inmis.CONFIG.spillArmorBackpacksOnDeath) {
                 spillInventory(inventory.armor);
 

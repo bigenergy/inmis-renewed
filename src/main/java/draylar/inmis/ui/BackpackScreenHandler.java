@@ -38,7 +38,7 @@ public class BackpackScreenHandler extends ScreenHandler {
             setupContainer(playerInventory, backpackStack);
         } else {
             PlayerEntity player = playerInventory.player;
-            this.close(player);
+            this.onClosed(player);
         }
     }
     

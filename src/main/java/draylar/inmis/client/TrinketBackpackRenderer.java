@@ -7,7 +7,9 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.model.EntityModel;
+import net.minecraft.client.render.item.ItemRenderer;
 import net.minecraft.client.render.model.json.ModelTransformation;
+import net.minecraft.client.render.model.json.ModelTransformationMode;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.item.ItemStack;
@@ -33,7 +35,18 @@ public class TrinketBackpackRenderer implements TrinketRenderer {
             matrices.translate(0, -0.2, 0);
         }
 
-        MinecraftClient.getInstance().getItemRenderer().renderItem(stack, ModelTransformation.Mode.FIXED, light, OverlayTexture.DEFAULT_UV, matrices, vertexConsumers, 0);
+        ItemRenderer itemRenderer = MinecraftClient.getInstance().getItemRenderer();
+        itemRenderer.renderItem(
+                stack,
+                ModelTransformationMode.FIXED,
+                light,
+                OverlayTexture.DEFAULT_UV,
+                matrices,
+                vertexConsumers,
+                player.getEntityWorld(),
+                0
+        );
+
         matrices.pop();
     }
 }

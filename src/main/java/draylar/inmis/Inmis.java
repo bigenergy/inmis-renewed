@@ -23,6 +23,7 @@ import net.minecraft.nbt.NbtList;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.Registry;
 import net.minecraft.screen.ScreenHandlerType;
+import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -36,7 +37,12 @@ public class Inmis implements ModInitializer {
     public static final boolean TRINKETS_LOADED = FabricLoader.getInstance().isModLoaded("trinkets");
     public static final Logger LOGGER = LogManager.getLogger();
     public static final Identifier CONTAINER_ID = id("backpack");
-    public static final ItemGroup GROUP = FabricItemGroup.builder(CONTAINER_ID).icon(() -> new ItemStack(Registries.ITEM.get(id("frayed_backpack")))).build();
+   // public static final ItemGroup GROUP = FabricItemGroup.builder().icon(() -> new ItemStack(Registries.ITEM.get(id("frayed_backpack")))).build();
+
+//    private static final ItemGroup GROUP = FabricItemGroup.builder()
+//            .icon(() -> new ItemStack(Registries.ITEM.get(id("frayed_backpack"))))
+//            .displayName(Text.translatable("itemGroup.inmis.backpack"))
+//            .build();
     public static final InmisConfig CONFIG = OmegaConfig.register(InmisConfig.class);
     //public static final ScreenHandlerType<BackpackScreenHandler> CONTAINER_TYPE = ScreenHandlerRegistry.registerExtended(CONTAINER_ID, BackpackScreenHandler::new);
     public static final ScreenHandlerType<BackpackScreenHandler> CONTAINER_TYPE = Registry.register(Registries.SCREEN_HANDLER, CONTAINER_ID, new ExtendedScreenHandlerType<>(BackpackScreenHandler::new));
@@ -89,7 +95,7 @@ public class Inmis implements ModInitializer {
 
             BackpackItem registered = Registry.register(Registries.ITEM, new Identifier("inmis", backpack.getName().toLowerCase() + "_backpack"), item);
             BACKPACKS.add(registered);
-            ItemGroupEvents.modifyEntriesEvent(GROUP).register(entries -> entries.add(registered));
+            ItemGroupEvents.modifyEntriesEvent(ItemGroups.TOOLS).register(entries -> entries.add(registered));
             ItemGroupEvents.modifyEntriesEvent(ItemGroups.TOOLS).register(entries -> entries.addBefore(Items.OAK_BOAT, registered));
 
             // Register to the TrinketsApi if both conditions are true.
@@ -99,7 +105,7 @@ public class Inmis implements ModInitializer {
             }
         }
 
-        ItemGroupEvents.modifyEntriesEvent(GROUP).register(entries -> entries.add(ENDER_POUCH));
+        ItemGroupEvents.modifyEntriesEvent(ItemGroups.TOOLS).register(entries -> entries.add(ENDER_POUCH));
         ItemGroupEvents.modifyEntriesEvent(ItemGroups.TOOLS).register(entries -> entries.addAfter(Items.ENDER_EYE, ENDER_POUCH));
     }
 

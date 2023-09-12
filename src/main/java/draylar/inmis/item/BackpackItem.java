@@ -53,7 +53,7 @@ public class BackpackItem extends Item implements FabricItem {
     }
 
     public static void openScreen(PlayerEntity player, ItemStack backpackItemStack) {
-        if(player.world != null && !player.world.isClient) {
+        if(player.getEntityWorld() != null && !player.getEntityWorld().isClient) {
             player.openHandledScreen(new ExtendedScreenHandlerFactory() {
                 @Override
                 public void writeScreenOpeningData(ServerPlayerEntity serverPlayerEntity, PacketByteBuf packetByteBuf) {
